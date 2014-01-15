@@ -41,6 +41,8 @@ void print_windows(WINDOW **, WINDOW **, WINDOW **, WINDOW **,
 		    );
 
 
+// TEMP INPUT DATA COPY
+int temp_input[MAXL+1];			     // this will be a copy of input, just for display in GUI
 
 // ARRAYS OF WINDOWS
   WINDOW * inp_windows[MAXL];
@@ -59,28 +61,12 @@ int main(void)
 
   int temp1[MAXL+2];			      // temp array, simulates temporary file, +2 for last # and @
   int temp2[MAXL+2];			      // same as above
-  int temp_input[MAXL+1];			     // this will be a copy of input, just for display in GUI
   int is_sorted = FALSE; // TRUE if input is sorted, FALSE otherwise
   
   
   
   
-  initscr();
-  refresh();
-  curs_set(0);
-  randomize(input, MAXL);
-  initialize_windows(inp_windows, temp1_windows, temp2_windows, out_windows);
-  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
-		input, input, input, input,
-		5, 4, 3, 2);
-  getch();
-  
-  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
-		input, input, input, input,
-		4, 3, 2, 1);
-  getch();
-  endwin();
-  exit(3);
+
   
   
   srand(time(NULL)); // seed for random 
@@ -92,10 +78,22 @@ int main(void)
   randomize(input, MAXL); // randomize input array of integers
   //get_values(input, MAXL);  // get user input
   
+  
+  
+  initscr(); // start graphics here
+  refresh();
+  curs_set(0);
+  
+  initialize_windows(inp_windows, temp1_windows, temp2_windows, out_windows);
+  
   while (is_sorted == FALSE)
   {
-    
-    
+    memcpy(temp_input, input, sizeof(input)); // copy input to temporary input in every iteration
+    print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, 0, 0, 0
+		    );
+ 
     divide(input,temp1,temp2,MAXL);
      
     
@@ -107,7 +105,11 @@ int main(void)
     
   }
   
-  printarr(input, MAXL);
+  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, MAXL+2, 1, MAXL+1
+		    );
+  endwin();
   return 0;
 }
 
@@ -189,6 +191,10 @@ void divide(int * input, int * temp1, int * temp2, int maxl)
       {
 	temp1[index1]=input[input_index];
 	index1++;
+	print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
       }
       else if (to_temp1 == TRUE) // else if last element was put in temp1
       {
@@ -196,6 +202,10 @@ void divide(int * input, int * temp1, int * temp2, int maxl)
 	{
 	  temp1[index1] = input[input_index];
 	  index1++;
+	  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
 	}
 	else // if input element is < last element in temp1
 	{
@@ -204,6 +214,10 @@ void divide(int * input, int * temp1, int * temp2, int maxl)
 	  index1++;
 	  index2++;
 	  to_temp1=FALSE;
+	  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
 	}
       }
       else if(to_temp1 == FALSE)
@@ -212,6 +226,10 @@ void divide(int * input, int * temp1, int * temp2, int maxl)
 	{
 	  temp2[index2] = input[input_index];
 	  index2++;
+	  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
 	}
 	else // if input element is < last element in temp2
 	{
@@ -220,6 +238,10 @@ void divide(int * input, int * temp1, int * temp2, int maxl)
 	  index1++;
 	  index2++;
 	  to_temp1=TRUE;
+	  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
 	}
       }
     }
@@ -228,14 +250,26 @@ void divide(int * input, int * temp1, int * temp2, int maxl)
     {
       temp1[index1] = EOS;
       index1++;
+      print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
     }
     else
     {
       temp2[index2] = EOS;
       index2++;
+      print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
     }
     temp1[index1] = EOA;
     temp2[index2] = EOA;
+    print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, 0
+		    );
 }
 
 int check_sorted(int * temp1, int * temp2)
@@ -261,6 +295,10 @@ void merge(int * input, int * temp1, int * temp2)
 	{
 	  input[input_index] = temp2[index2];
 	  input_index++;
+	  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, input_index
+		    );
 	}
 	index2++;
       }
@@ -275,6 +313,10 @@ void merge(int * input, int * temp1, int * temp2)
 	{
 	  input[input_index] = temp1[index1];
 	  input_index++;
+	  print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, input_index
+		    );
 	}
 	index1++;
       }
@@ -304,6 +346,10 @@ void merge(int * input, int * temp1, int * temp2)
 	      input[input_index] = temp2[index2];
 	      input_index++;
 	      index2++;
+	      print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, input_index
+		    );
 	    }
 	  }
 	  else if (temp2[index2] == EOS )
@@ -315,6 +361,10 @@ void merge(int * input, int * temp1, int * temp2)
 	      input[input_index] = temp1[index1];
 	      input_index++;
 	      index1++;
+	      print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, input_index
+		    );
 	    }
 	  }
 	  else if (temp1[index1] <= temp2[index2])
@@ -323,6 +373,10 @@ void merge(int * input, int * temp1, int * temp2)
 	    input[input_index] = temp1[index1];
 	    input_index++;
 	    index1++;
+	    print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, input_index
+		    );
 	  }
 	  else if (temp2[index2] < temp1[index1])
 	  {
@@ -330,6 +384,10 @@ void merge(int * input, int * temp1, int * temp2)
 	    input[input_index] = temp2[index2];
 	    input_index++;
 	    index2++;
+	    print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
+		    temp_input, temp1, temp2,input,
+		    MAXL+1, index1, index2, input_index
+		    );
 	  }
 	}
       }
@@ -517,5 +575,6 @@ void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind
     }
     wrefresh(out_wind[win_index-1]);
   }
+  getch();
 }
 
