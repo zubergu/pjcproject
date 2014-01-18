@@ -42,16 +42,6 @@ void print_windows(WINDOW **, WINDOW **, WINDOW **, WINDOW **,
 		    int,int, int
 		    );
 
-/*******
- * 
- * LOGFILE RELATED FUNCTIONS
- * 
- * ******/
-void header(void);
-void endnote(int);
-void before(int *, int);
-void after(int *, int);
-
 
 // TEMP INPUT DATA COPY
 int temp_input[MAXL+1];			     // this will be a copy of input, just for display in GUI
@@ -76,7 +66,12 @@ int main(void)
   int temp1[MAXL+2];			      // temp array, simulates temporary file, +2 for last # and @
   int temp2[MAXL+2];			      // same as above
   int is_sorted = FALSE; // TRUE if input is sorted, FALSE otherwise
-  static int counter = 0;
+  
+  
+  
+  
+
+  
   
   srand(time(NULL)); // seed for random 
   
@@ -96,7 +91,7 @@ int main(void)
   start_color();
   
   
-  header();
+  
   
   init_pair(1, COLOR_WHITE, COLOR_BLACK);
   init_pair(2, COLOR_WHITE, COLOR_RED);
@@ -109,7 +104,6 @@ int main(void)
   wrefresh(stdscr);
   while (is_sorted == FALSE)
   {
-    counter++; // iterations counter 
     memcpy(temp_input, input, sizeof(input)); // copy input to temporary input in every iteration
     initialize_windows(inp_windows, temp1_windows, temp2_windows, out_windows);
     print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
@@ -117,14 +111,14 @@ int main(void)
 		    MAXL, -1, -1, -1,
 		    0,0,0
 		    );
-    before(temp_input, counter);
+ 
     divide(input,temp1,temp2,MAXL);
-    
+     
     
     is_sorted = check_sorted(temp1, temp2);
     
     merge(input, temp1,temp2);
-    after(input, counter);
+    
     
     
   }
@@ -135,8 +129,6 @@ int main(void)
 		    0,0,0
 		    );
   endwin();
-  
-  endnote(counter);
   return 0;
 }
 
@@ -843,75 +835,3 @@ void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind
   getch();
 }
 
-/*
- * 
- * Logfile functions
- * 
- */
-
-void header(void)
-{
-  FILE * logfile;
-  time_t runtime;
-  struct tm struntime;
-  struct tm * ptr= &struntime;
-  time(&runtime);
-  
-  ptr = gmtime(&runtime);
-  logfile= fopen("naturalne.log", "a");
-  fputs("******************************************\n",logfile);
-  fputs("* SORTOWANIE PRZEZ LACZENIE NATURALNE\n",logfile);
-  fprintf(logfile, "* Czas: %02d:%02d ---- Data: %02d-%02d-%04d\n", ptr->tm_hour,ptr->tm_min,ptr->tm_mday, ptr->tm_mon+1,ptr->tm_year+1900);
-  fputs("******************************************\n",logfile);
-  fclose(logfile);
-}
-
-
-
-void endnote(int counter)
-{
-  FILE * logfile;
-  time_t runtime;
-  struct tm struntime;
-  struct tm * ptr= &struntime;
-  time(&runtime);
-  
-  ptr = gmtime(&runtime);
-  logfile= fopen("naturalne.log", "a");
-  fputs("\n\nPODSUMOWANIE:\n",logfile);
-  fprintf(logfile,"Liczba iteracji: %d\n", counter);
-  fprintf(logfile, "* Czas zakonczenia: %02d:%02d ---- Data: %02d-%02d-%04d\n", ptr->tm_hour,ptr->tm_min,ptr->tm_mday, ptr->tm_mon+1,ptr->tm_year+1900);
-  fputs("******************************************\n",logfile);
-  fclose(logfile);
-}
-
-void before(int * input, int iter)
-{
-  FILE * logfile;
-  int i=0;
-  logfile= fopen("naturalne.log", "a");
-  
-  fprintf(logfile,"\n\tITERACJA NR : %d\n", iter);
-  fputs("\tDANE WEJSCIOWE: ", logfile);
-  for(i=0;i<MAXL;i++)
-  {
-    fprintf(logfile,"%3d", input[i]);
-  }
-  fputs("\n", logfile);
-  fclose(logfile);
-}
-
-void after(int * output, int iter)
-{
-  FILE * logfile;
-  int i=0;
-  logfile= fopen("naturalne.log", "a");
-  
-  fputs("\tDANE WYJSCIOWE: ", logfile);
-  for(i=0;i<MAXL;i++)
-  {
-    fprintf(logfile,"%3d", output[i]);
-  }
-  fputs("\n\n", logfile);
-  fclose(logfile);
-}

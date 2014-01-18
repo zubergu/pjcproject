@@ -1,0 +1,74 @@
+******************************************
+* SORTOWANIE PRZEZ LACZENIE NATURALNE
+* Czas: 20:56 ---- Data: 18- 1-2014
+******************************************
+******************************************
+* SORTOWANIE PRZEZ LACZENIE NATURALNE
+* Czas: 21: 2 ---- Data: 18- 1-2014
+******************************************
+
+
+PODSUMOWANIE:
+Liczba iteracji: 4
+* Czas zakonczenia: 21: 3 ---- Data: 18- 1-2014
+******************************************
+******************************************
+* SORTOWANIE PRZEZ LACZENIE NATURALNE
+* Czas: 21:05 ---- Data: 18-01-2014
+******************************************
+
+
+PODSUMOWANIE:
+Liczba iteracji: 5
+* Czas zakonczenia: 21:06 ---- Data: 18-01-2014
+******************************************
+******************************************
+* SORTOWANIE PRZEZ LACZENIE NATURALNE
+* Czas: 21:17 ---- Data: 18-01-2014
+******************************************
+
+	ITERACJA NR : 1
+DANE WEJSCIOWE:   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+DANE WYJSCIOWE:   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+
+
+
+PODSUMOWANIE:
+Liczba iteracji: 2
+* Czas zakonczenia: 21:18 ---- Data: 18-01-2014
+******************************************
+******************************************
+* SORTOWANIE PRZEZ LACZENIE NATURALNE
+* Czas: 21:20 ---- Data: 18-01-2014
+******************************************
+
+	ITERACJA NR : 1
+	DANE WEJSCIOWE:   1  2  1 98  9 86 45  3  2 77 56 44  5  6  7  9  0  1 66 44
+	DANE WYJSCIOWE:   1  1  2 98  9 45 86  2  3 77 44 56  0  1  5  6  7  9 66 44
+
+
+	ITERACJA NR : 2
+	DANE WEJSCIOWE:   1  1  2 98  9 45 86  2  3 77 44 56  0  1  5  6  7  9 66 44
+	DANE WYJSCIOWE:   1  1  2  9 45 86 98  2  3 44 56 77  0  1  5  6  7  9 44 66
+
+
+	ITERACJA NR : 3
+	DANE WEJSCIOWE:   1  1  2  9 45 86 98  2  3 44 56 77  0  1  5  6  7  9 44 66
+	DANE WYJSCIOWE:   1  1  2  2  3  9 44 45 56 77 86 98  0  1  5  6  7  9 44 66
+
+
+	ITERACJA NR : 4
+	DANE WEJSCIOWE:   1  1  2  2  3  9 44 45 56 77 86 98  0  1  5  6  7  9 44 66
+	DANE WYJSCIOWE:   0  1  1  1  2  2  3  5  6  7  9  9 44 44 45 56 66 77 86 98
+
+
+	ITERACJA NR : 5
+	DANE WEJSCIOWE:   0  1  1  1  2  2  3  5  6  7  9  9 44 44 45 56 66 77 86 98
+	DANE WYJSCIOWE:   0  1  1  1  2  2  3  5  6  7  9  9 44 44 45 56 66 77 86 98
+
+
+
+PODSUMOWANIE:
+Liczba iteracji: 5
+* Czas zakonczenia: 21:22 ---- Data: 18-01-2014
+******************************************
