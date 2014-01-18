@@ -1,9 +1,9 @@
-/*
+/**************
  * 
- * THIS WILL SORT ONLY POSITIVE INTEGERS  in range [1:99] DUE TO DEFINITION OF EOS AND EOA BOTH AS NEGATIVE INTEGERS
+ * THIS WILL SORT ONLY POSITIVE INTEGERS  in range [0:99] DUE TO DEFINITION OF EOS AND EOA BOTH AS NEGATIVE INTEGERS
  * 
  * 
- */
+ **************/
 
 #include <ncurses.h>// for GUI, TRUE, FALSE
 #include <stdlib.h> // for rand()
@@ -53,16 +53,30 @@ void before(int *, int);
 void after(int *, int);
 
 
+
+
 // TEMP INPUT DATA COPY
 int temp_input[MAXL+1];			     // this will be a copy of input, just for display in GUI
-
+int stdscry, stdscrx; // global size of stdscr 
 
 attr_t attribs; // only for checking window attributes, never used really (except wattr_get)
+
+
 // ARRAYS OF WINDOWS
   WINDOW * inp_windows[MAXL];
   WINDOW * temp1_windows[MAXL];
   WINDOW * temp2_windows[MAXL];
   WINDOW * out_windows[MAXL];
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 /********
  * 
  * MAIN PROGRAM
@@ -84,17 +98,18 @@ int main(void)
   memset(temp2,'\0', sizeof(int)*(MAXL+1)); // same as above
   
   
-  //randomize(input, MAXL); // randomize input array of integers
-  
-  
-  
-  
   initscr(); // start graphics here
   refresh();
   curs_set(0); // no visible cursor
   noecho();    // no visible input
   start_color();
   
+  if ( LINES<20 || COLS < 100 )
+  {
+    endwin();
+    printf("Minimalny rozmiar konsoli to: 20 w, 100 k.!!\n");
+    exit(3);
+  }
   
   header();
   
@@ -105,11 +120,13 @@ int main(void)
   init_pair(5, COLOR_WHITE, COLOR_BLUE);
   
   get_values(input, MAXL);  // print menu and get input
-  wbkgd(stdscr, COLOR_PAIR(5));
+  wbkgd(stdscr, COLOR_PAIR(1) | '*');
   wrefresh(stdscr);
   while (is_sorted == FALSE)
   {
+    getmaxyx(stdscr,stdscry,stdscrx);
     counter++; // iterations counter 
+    
     memcpy(temp_input, input, sizeof(input)); // copy input to temporary input in every iteration
     initialize_windows(inp_windows, temp1_windows, temp2_windows, out_windows);
     print_windows(inp_windows, temp1_windows, temp2_windows, out_windows,
@@ -117,14 +134,15 @@ int main(void)
 		    MAXL, -1, -1, -1,
 		    0,0,0
 		    );
-    before(temp_input, counter);
+    before(temp_input, counter);   // input to logfile
+    
     divide(input,temp1,temp2,MAXL);
-    
-    
+ 
     is_sorted = check_sorted(temp1, temp2);
     
     merge(input, temp1,temp2);
-    after(input, counter);
+    
+    after(input, counter);       // output to logfile
     
     
   }
@@ -134,9 +152,9 @@ int main(void)
 		    MAXL, MAXL+2, -1, MAXL+1,
 		    0,0,0
 		    );
-  endwin();
+  endwin(); // graphics end here
   
-  endnote(counter);
+  endnote(counter); // summary to logfile
   return 0;
 }
 
@@ -278,10 +296,22 @@ void divide(int * input, int * temp1, int * temp2, int maxl)
 		    );
 }
 
+
+
+/***
+ * 
+ ***/
+
 int check_sorted(int * temp1, int * temp2)
 {
   return (temp1[0] == EOA || temp2[0] == EOA) ? TRUE:FALSE;
 }
+
+
+
+/***
+ * 
+ ***/
 
 void merge(int * input, int * temp1, int * temp2)
 {
@@ -419,6 +449,9 @@ void merge(int * input, int * temp1, int * temp2)
 }
 
 
+
+
+
 /*
  * 
  * GRAPHICS
@@ -434,22 +467,21 @@ void get_values(int * input, int maxl)
   curs_set(1);
   WINDOW * mainscreen;
   mainscreen = newwin(LINES, COLS, 0,0);
-  box(mainscreen, 'X','X');
+  box(mainscreen, '*','*');
   wbkgd(mainscreen, COLOR_PAIR(5));
   keypad(mainscreen,TRUE);
 
-  mvwaddstr(mainscreen, 1,1, "SORTOWANIE PRZEZ LACZENIE NATURALNE");
+  mvwaddstr(mainscreen, 1,1, " SORTOWANIE PRZEZ LACZENIE NATURALNE by GRZEGORZ UTNIK");
   wrefresh(mainscreen);
   
-  wgetch(mainscreen);
   user_input[0]=0;
   
   while (user_input[0] != 'Q' && i<maxl)
   {
-    mvwprintw(mainscreen,3,1,"Podaj wartosci do posortowania (1-99):         ");
-    mvwprintw(mainscreen,4,1,"Wpisz Q aby przerwac.                              ");
-    mvwprintw(mainscreen,5,1,"Wartosc:                                       ");
-    mvwprintw(mainscreen,10,1,"                                              ");
+    mvwprintw(mainscreen,3,1," Podaj wartosci do posortowania (0-99):         ");
+    mvwprintw(mainscreen,4,1," Wpisz Q aby przerwac, R aby wylosowac liczby.  ");
+    mvwprintw(mainscreen,5,1," Wartosc:                                       ");
+    mvwprintw(mainscreen,10,1,"                                               ");
     wmove(mainscreen,5, 10);
     wrefresh(mainscreen);
     wgetnstr(mainscreen, user_input,2);
@@ -458,13 +490,14 @@ void get_values(int * input, int maxl)
     
     if( inlen == 0 || (inlen==1  && !isdigit(user_input[0])) || (inlen==2 && (!isdigit(user_input[0]) || !(isdigit(user_input[1])))))
     {
-      if (user_input[0]=='Q')
+      if (user_input[0]=='Q' || user_input[0]=='R')
       {
 	break;
       }
-      mvwprintw(mainscreen,10,1,"Przyjmuje tylko liczby calkowite 0-99.\n");
+      flash();
+      mvwprintw(mainscreen,10,1," Przyjmuje tylko liczby calkowite 0-99.");
       wrefresh(mainscreen);
-      napms(1000);
+      napms(1500);
       continue;
     }
     else
@@ -478,10 +511,16 @@ void get_values(int * input, int maxl)
     }
   }
   input[i] = EOA; // end array with EOA indicator
-  
+  if (user_input[0] == 'R')
+  {
+    mvwprintw(mainscreen,10,1,"  Liczby zostana wylosowane. Nacisnij dowolny klawisz.   ");
+    wgetch(mainscreen);
+    randomize(input, MAXL);
+    i=maxl;
+  }
   if(i != maxl)
   {
-    mvwprintw(mainscreen, 10, 1, "Przerwano dzialanie programu.                    ");
+    mvwprintw(mainscreen, 10, 1, "  Przerwano dzialanie programu.Dowolny klawisz konczy dzialanie.");
     wgetch(mainscreen);
     endwin();
     exit(1);
@@ -493,34 +532,30 @@ void get_values(int * input, int maxl)
   refresh();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/***
+ * 
+ ***/
 
 void initialize_windows(WINDOW ** input, WINDOW ** temp1, WINDOW ** temp2, WINDOW ** output)
 {
-  int x,y;
+  // stdscry, stdscrx are global variables used here
   int win_size=4;
   int win_index=0;
-  // input windows
+  int aligny, alignx; // alignment 
   
-  // calculate win_size here later
+  if ( stdscry <19 || stdscrx<100)
+  {
+    endwin();
+    printf("Minimalny rozmiar ekranu to 20w x 100 k. Koncze dzialanie.");
+    exit(3);
+  }
+  
+  aligny = (stdscry-18)/2;
+  alignx = (stdscrx-100)/2;
+  
   for (win_index=0; win_index<MAXL; win_index++)
   {
-    input[win_index] = newwin(win_size, win_size, 0 , win_size * win_index);
+    input[win_index] = newwin(win_size, win_size, 0+aligny , win_size * win_index+alignx);
     box(input[win_index],0,0);
     wbkgd(input[win_index], COLOR_PAIR(1)); //BLACK AND WHITE AT THE BEGINNING
     wrefresh(input[win_index]);
@@ -528,7 +563,7 @@ void initialize_windows(WINDOW ** input, WINDOW ** temp1, WINDOW ** temp2, WINDO
   
   for (win_index = 0; win_index < MAXL; win_index++)
   {
-    temp1[win_index] = newwin(win_size, win_size, 1+win_size, 10+win_size * win_index);
+    temp1[win_index] = newwin(win_size, win_size, 1+win_size+aligny, 10+win_size * win_index+alignx);
     box(temp1[win_index],0,0);
     wbkgd(temp1[win_index], COLOR_PAIR(1)); //BLACK AND WHITE AT THE BEGINNING
     wrefresh(temp1[win_index]);
@@ -537,7 +572,7 @@ void initialize_windows(WINDOW ** input, WINDOW ** temp1, WINDOW ** temp2, WINDO
   
   for (win_index = 0; win_index < MAXL; win_index++)
   {
-    temp2[win_index] = newwin(win_size, win_size, 2+2*win_size, 10+win_size * win_index);
+    temp2[win_index] = newwin(win_size, win_size, 2+2*win_size+aligny, 10+win_size * win_index+alignx);
     box(temp2[win_index],0,0);
     wbkgd(temp2[win_index], COLOR_PAIR(1)); //BLACK AND WHITE AT THE BEGINNING
     wrefresh(temp2[win_index]);
@@ -547,7 +582,7 @@ void initialize_windows(WINDOW ** input, WINDOW ** temp1, WINDOW ** temp2, WINDO
   
   for (win_index = 0; win_index < MAXL; win_index++)
   {
-    output[win_index] = newwin(win_size, win_size, 3+3*win_size, win_size * win_index);
+    output[win_index] = newwin(win_size, win_size, 3+3*win_size+aligny, win_size * win_index+alignx);
     box(output[win_index],0,0);
     wbkgd(output[win_index], COLOR_PAIR(1)); //BLACK AND WHITE AT THE BEGINNING
     wrefresh(output[win_index]);
@@ -556,7 +591,9 @@ void initialize_windows(WINDOW ** input, WINDOW ** temp1, WINDOW ** temp2, WINDO
 
 }
 
-
+/***
+ * 
+ ***/
 void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind, WINDOW ** out_wind,
 		   int * input, int * temp1, int * temp2, int * output,
 		   int in_ind, int temp1_ind, int temp2_ind, int out_ind,
@@ -571,9 +608,7 @@ void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind
   short setcolor;
 
   /*
-   * 
-   * Print input array
-   * 
+   * Print input array 
    */
   win_index=0;
   arr_index=0;
@@ -623,11 +658,8 @@ void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind
   }
 
   /*
-   * 
-   * Print temp1
-   * 
+   * Print temp1 
    */
-#if 1
   win_index=0;
   arr_index=0;
   
@@ -701,12 +733,8 @@ void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind
     
   }
   
-#endif
-  
   /*
-   * 
    * Print temp2
-   * 
    */
   win_index=0;
   arr_index=0;
@@ -775,9 +803,7 @@ void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind
   
   
   /*
-   * 
    * Print output
-   * 
    */
   win_index=0;
   arr_index=0;
@@ -843,6 +869,9 @@ void print_windows(WINDOW ** in_wind, WINDOW ** temp1_wind, WINDOW ** temp2_wind
   getch();
 }
 
+
+
+
 /*
  * 
  * Logfile functions
@@ -866,7 +895,9 @@ void header(void)
   fclose(logfile);
 }
 
-
+/***
+ * 
+ ***/
 
 void endnote(int counter)
 {
@@ -885,6 +916,9 @@ void endnote(int counter)
   fclose(logfile);
 }
 
+/***
+ * 
+ ***/
 void before(int * input, int iter)
 {
   FILE * logfile;
@@ -900,6 +934,10 @@ void before(int * input, int iter)
   fputs("\n", logfile);
   fclose(logfile);
 }
+
+/***
+ * 
+ ***/
 
 void after(int * output, int iter)
 {
